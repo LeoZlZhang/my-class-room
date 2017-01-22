@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:batch="http://www.springframework.org/schema/batch"
+       xsi:schemaLocation="
+            http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context.xsd
+            http://www.springframework.org/schema/batch
+	        http://www.springframework.org/schema/batch/spring-batch.xsd">
+
+
+    <context:component-scan base-package="com.leo"/>
+    <bean id="demoReader" class="org.springframework.batch.item.file.FlatFileItemReader">
+        <property name="resource" value="file:F:\github\my-class-room\run-spring-in-main\src\main\resources\data"/>
+        <property name="lineMapper">
+            <bean class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+                <property name="lineTokenizer">
+                    <bean class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+                        <property name="delimiter" value="~"/>
+                        <property name="names" value="name,age,married"/>
+                    </bean>
+                </property>
+                <property name="fieldSetMapper">
+                    <bean class="org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper">
+                        <property name="targetType" value="com.leo.model.Person"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    <bean id="demoWriter" class="com.leo.DemoWriter"/>
+    <bean id="jobRepository" class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean"/>
+    <bean id="jobLauncher" class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+        <property name="jobRepository" ref="jobRepository"/>
+    </bean>
+    <bean id="transactionManager" class="org.springframework.batch.support.transaction.ResourcelessTransactionManager"/>
+    <batch:job id="batchjob">
+        <batch:step id="step1">
+            <batch:tasklet>
+                <batch:chunk reader="demoReader" writer="demoWriter" commit-interval="10"/>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+</beans>

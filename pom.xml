@@ -32,6 +32,7 @@
         <module>annotation</module>
         <module>csv-transfer</module>
         <module>run-spring-in-main</module>
+        <module>spring-batch</module>
     </modules>
 
 
