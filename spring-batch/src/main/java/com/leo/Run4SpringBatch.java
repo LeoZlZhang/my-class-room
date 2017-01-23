@@ -9,6 +9,7 @@ import org.springframework.batch.core.repository.JobExecutionAlreadyRunningExcep
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import java.io.IOException;
@@ -22,11 +23,7 @@ import java.util.stream.Collectors;
  */
 public class Run4SpringBatch {
     public static void main(String[] args) throws IOException, JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
-        String[] confs = Files.find(Paths.get(System.getProperty("user.dir")), Integer.MAX_VALUE, (path, attri) -> path.getFileName().toString().startsWith("demoSpringBatchContext"))
-                .map(path -> path.toAbsolutePath().toString())
-                .collect(Collectors.toList())
-                .toArray(new String[]{});
-        ApplicationContext context = new FileSystemXmlApplicationContext(confs[0]);
+        ApplicationContext context = new ClassPathXmlApplicationContext("demoSpringBatchContext.xml");
         JobLauncher launcher = context.getBean("jobLauncher", SimpleJobLauncher.class);
         launcher.run(context.getBean("batchjob", Job.class), new JobParameters());
     }
